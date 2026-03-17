@@ -2,7 +2,7 @@ const API_URL = "https://iws.itcn.dk/techcollege/schedules?departmentcode=smed";
 
 let cachedSchedules = null;
 
-export async function getSchedules() {
+export async function fetchActivities() {
   if (cachedSchedules) return cachedSchedules;
 
   const response = await fetch(API_URL);
@@ -28,7 +28,7 @@ function isCurrentActivity(item, durationMinutes = 60) {
 }
 
 export async function getActivities(durationMinutes = 60) {
-  const schedules = await getSchedules();
+  const schedules = await fetchActivities();
   const now = new Date();
 
   const currentActivities = schedules

@@ -1,8 +1,8 @@
-import { getActivities } from "./incomingActivitiesAPI.js";
+import { fetchActivities } from "./incomingActivitiesAPI.js";
 
 export async function ActivitiesModule(container) {
   try {
-    const activities = await getActivities();
+    const activities = await fetchActivities();
 
     container.innerHTML = "";
 

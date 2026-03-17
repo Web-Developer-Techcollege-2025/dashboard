@@ -1,11 +1,11 @@
-import { drNewsAPI } from "../data/DRNewsAPI";
+import { fetchDRNews } from "../data/DRNewsAPI";
 import { create } from "../utils/create";
 import { set } from "../utils/set";
 
 export function DRNewsModule() {
   const drNewsContainer = create("div", "dr-news-container");
 
-  const drNewsData = drNewsAPI();
+  const drNewsData = fetchDRNews();
   drNewsData;
 
   const heading = create("h2", "heading");
