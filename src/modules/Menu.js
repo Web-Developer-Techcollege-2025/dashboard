@@ -1,4 +1,6 @@
-import { fetchMenu } from "../data/KantinemenuAPI.js";
+import { fetchMenu } from "../data/MenuAPI.js";
+import { create } from "../utils/create.js";
+import { set } from "../utils/set.js";
 
 const DAYS = [
   { key: "mandag", label: "Mandag", dayCount: 1 },
@@ -8,41 +10,33 @@ const DAYS = [
   { key: "fredag", label: "Fredag", dayCount: 5 },
 ];
 
-export async function MenuModule(container) {
-  const section = document.createElement("section");
-  section.className = "";
+export async function MenuModule() {
+  const menuContainer = create("section", "menu-container");
 
-  const heading = document.createElement("h2");
-  heading.className = "";
+  const heading = create("h2", "menu-heading");
   heading.textContent = "Kantinen";
-  section.appendChild(heading);
+  set(heading, menuContainer);
 
   const dishElement = {};
   DAYS.forEach(({ key, label }) => {
-    const card = document.createElement("div");
-    card.className = "";
+    const card = create("div", "menu-day-card");
     card.dataset.day = key;
 
-    const title = document.createElement("h3");
-    title.className = "";
+    const title = create("h3", "menu-day-title");
     title.textContent = label;
 
-    const dish = document.createElement("p");
-    dish.className = "";
+    const dish = create("p", "menu-dish");
     dish.textContent = "–";
 
     dishElement[key] = dish;
-    card.appendChild(title);
-    card.appendChild(dish);
-    section.appendChild(card);
+    set([title, dish], card);
+    set(card, menuContainer);
   });
-
-  container.appendChild(section);
 
   function highlightToday() {
     const todayKey = DAYS.find((d) => d.dayCount === new Date().getDay())?.key;
     DAYS.forEach(({ key }) => {
-      const card = section.querySelector(`[data-day="${key}"]`);
+      const card = menuContainer.querySelector(`[data-day="${key}"]`);
       card.classList.toggle("menu-day-card--today", key === todayKey);
     });
   }
@@ -53,6 +47,11 @@ export async function MenuModule(container) {
 
     try {
       const data = await fetchMenu();
+      if (!data || !Array.isArray(data.Days)) {
+        heading.textContent = "Kantinen - utilgængelig";
+        return;
+      }
+
       heading.textContent = `Kantinen – Uge ${data.Week}`;
       data.Days.forEach(({ DayName, Dish }) => {
         if (dishElement[DayName] && dishElement[DayName].textContent !== Dish) {
@@ -61,7 +60,7 @@ export async function MenuModule(container) {
       });
       highlightToday();
     } catch (err) {
-      console.error("Failed to fetch canteen menu:", err);
+      heading.textContent = "Kantinen - utilgængelig";
     }
   }
 
@@ -69,5 +68,5 @@ export async function MenuModule(container) {
 
   setInterval(updateMenu, 10 * 60 * 60 * 1000);
 
-  return section;
+  return menuContainer;
 }

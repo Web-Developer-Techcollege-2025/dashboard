@@ -3,21 +3,33 @@ const API_URL = "https://iws.itcn.dk/techcollege/schedules?departmentcode=smed";
 let cachedSchedules = null;
 
 export async function fetchActivities() {
-  if (cachedSchedules) return cachedSchedules;
+  try {
+    if (cachedSchedules) return cachedSchedules;
 
-  const response = await fetch(API_URL);
-  if (!response.ok) throw new Error("Failed to fetch schedules");
+    const activitiesResponse = await fetch(API_URL);
+    if (!activitiesResponse.ok) throw new Error("Failed to fetch schedules");
 
-  const data = await response.json();
-  cachedSchedules = data.value.map((item) => ({
-    team: item.Team,
-    startDate: item.StartDate,
-    subject: item.Subject,
-    education: item.Education,
-    room: item.Room,
-  }));
+    const contentType = activitiesResponse.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error(
+        `Activities API returned non-JSON content (${contentType || "unknown"})`,
+      );
+    }
 
-  return cachedSchedules;
+    const ActivitiesData = await activitiesResponse.json();
+    cachedSchedules = ActivitiesData.value.map((item) => ({
+      team: item.Team,
+      startDate: item.StartDate,
+      subject: item.Subject,
+      education: item.Education,
+      room: item.Room,
+    }));
+
+    return cachedSchedules;
+  } catch (error) {
+    console.error("Error fetching activities:", error);
+    throw error;
+  }
 }
 
 function isCurrentActivity(item, durationMinutes = 60) {

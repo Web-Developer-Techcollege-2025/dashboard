@@ -42,7 +42,24 @@
 }
 
 @layer base {
-  /* h1 {
-        @apply font-bold;
-    } */
+  #app {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    place-items: center;
+  }
+
+  body {
+    font-family: var(--font-family);
+  }
+}
+
+@layer components {
+  /* Put custom component class styles here */
+}
+
+@layer utilities {
+  /* Put custom utility class styles here */
 }

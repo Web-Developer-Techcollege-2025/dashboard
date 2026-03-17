@@ -1,13 +1,19 @@
-//import {rejseplanenAPI} from "../data/RejseplanenAPI"
-import { create } from "../utils/create";
-import { set } from "../utils/set";
+import { fetchRejseplanen } from "../data/RejseplanenAPI.js";
+import { create } from "../utils/create.js";
+import { set } from "../utils/set.js";
 
-export function RejseplanenModule() {
-  const rejseplanenContainer = create("div", "rejseplanen-container");
+export async function RejseplanenModule() {
+  const rejseplanenContainer = create("section", "rejseplanen-container");
 
-  const busTimes = create("h2");
+  const busTimes = create("h2", "rejseplanen-heading");
 
   busTimes.textContent = "BUSTIDER";
+
+  try {
+    await fetchRejseplanen();
+  } catch {
+    busTimes.textContent = "BUSTIDER - utilgængelig";
+  }
 
   set(busTimes, rejseplanenContainer);
 
