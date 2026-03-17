@@ -1,12 +1,12 @@
 import { drNewsAPI } from "../data/DRNewsAPI";
-import { create } from "../utils/Create";
-import { set } from "../utils/Set";
+import { create } from "../utils/create";
+import { set } from "../utils/set";
 
-export function DrNewsModule() {
+export function DRNewsModule() {
   const drNewsContainer = create("div", "dr-news-container");
 
   const drNewsData = drNewsAPI();
-    drNewsData
+  drNewsData;
 
   const heading = create("h2", "heading");
   set(heading, drNewsContainer);

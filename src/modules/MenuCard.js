@@ -1,14 +1,14 @@
 import { fetchMenu } from "../data/KantinemenuAPI.js";
 
 const DAYS = [
-  { key: "mandag",  label: "Mandag",  dayCount: 1 },
+  { key: "mandag", label: "Mandag", dayCount: 1 },
   { key: "tirsdag", label: "Tirsdag", dayCount: 2 },
-  { key: "onsdag",  label: "Onsdag",  dayCount: 3 },
+  { key: "onsdag", label: "Onsdag", dayCount: 3 },
   { key: "torsdag", label: "Torsdag", dayCount: 4 },
-  { key: "fredag",  label: "Fredag",  dayCount: 5 },
+  { key: "fredag", label: "Fredag", dayCount: 5 },
 ];
 
-export async function MenuWindow(container) {
+export async function MenuModule(container) {
   const section = document.createElement("section");
   section.className = "";
 
@@ -68,4 +68,6 @@ export async function MenuWindow(container) {
   await updateMenu();
 
   setInterval(updateMenu, 10 * 60 * 60 * 1000);
+
+  return section;
 }
