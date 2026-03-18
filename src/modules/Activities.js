@@ -1,50 +1,111 @@
-import { fetchActivities } from "../data/ActivitiesAPI.js";
+import { getActivities } from "../data/ActivitiesAPI.js";
 import { create } from "../utils/create.js";
 import { set } from "../utils/set.js";
 
+// 🎨 EXACT color rotation like your design
+const colorVariants = [
+  {
+    bg: "bg-[var(--color-orange)]",
+    pill: "bg-[var(--color-primary-red)]",
+  },
+  {
+    bg: "bg-[var(--color-light-green)]",
+    pill: "bg-[var(--color-dark-green)]",
+  },
+  {
+    bg: "bg-[var(--color-yellow)]",
+    pill: "bg-[var(--color-dark-yellow)]",
+  },
+  {
+    bg: "bg-[var(--color-light-blue)]",
+    pill: "bg-[var(--color-blue)]",
+  },
+];
+
 export async function ActivitiesModule() {
   try {
-    const activities = await fetchActivities();
+    const activities = await getActivities();
 
-    const activitiesContainer = create("section", "activities-container");
-    const heading = create("h2", "activities-heading");
-    heading.textContent = "AKTIVITETER";
-    set(heading, activitiesContainer);
+    const container = create(
+      "section",
+      "w-[420px] p-6 rounded-[12px] bg-[var(--color-light-blue)]/40"
+    );
 
-    activities.slice(0, 6).forEach((activity) => {
-      const item = create("div", "activity-item");
+    // TITLE
+    const heading = create(
+      "h2",
+      "text-center text-[var(--color-primary-red)] text-[36px] font-bold mb-6 tracking-widest"
+    );
+    heading.textContent = "SKEMA";
+    set(heading, container);
 
-      const roomDiv = create("div", "activity-room");
-      roomDiv.textContent = activity.room;
+    // TAKE FIRST 6 ACTIVITIES
+    activities.slice(0, 6).forEach((activity, index) => {
+      // 🎯 ONLY rotation — NOTHING else
+      const variant = colorVariants[index % colorVariants.length];
 
-      const teamSubjectDiv = create("div", "activity-team-subject");
+      const item = create(
+        "div",
+        `flex items-center justify-between ${variant.bg} rounded-full px-4 py-3 mb-4`
+      );
 
-      const teamDiv = create("div", "activity-team");
-      teamDiv.textContent = activity.team;
+      // ROOM (pill)
+      const room = create(
+        "div",
+        `${variant.pill} text-white px-4 py-2 rounded-full text-[16px] font-semibold w-[90px] text-center truncate`
+      );
+      room.textContent = activity.room;
 
-      const subjectDiv = create("div", "activity-subject");
-      subjectDiv.textContent = activity.subject;
+      // MIDDLE (team + subject)
+      const middle = create(
+        "div",
+        "flex items-center gap-4 flex-1 px-4 text-white"
+      );
 
-      set([teamDiv, subjectDiv], teamSubjectDiv);
+      const team = create(
+        "div",
+        "text-[16px] font-semibold tracking-wide"
+      );
+      team.textContent = activity.team;
 
-      const timeDiv = create("div", "activity-time");
-      timeDiv.textContent = formatTime(activity.startDate);
+      const subject = create(
+        "div",
+        "text-[14px] font-light opacity-90"
+      );
+      subject.textContent = activity.subject;
 
-      set([roomDiv, teamSubjectDiv, timeDiv], item);
+      set([team, subject], middle);
 
-      set(item, activitiesContainer);
+      // TIME
+      const time = create(
+        "div",
+        "text-white text-[14px] font-semibold"
+      );
+      time.textContent = formatTime(activity.startDate);
+
+      // BUILD
+      set([room, middle, time], item);
+      set(item, container);
     });
 
-    return activitiesContainer;
+    return container;
   } catch (error) {
     console.error(error);
-    const errorDiv = create("div", "activities-error");
+
+    const errorDiv = create(
+      "div",
+      "text-white bg-[var(--color-primary-red)] p-4 rounded-[12px]"
+    );
     errorDiv.textContent = "AKTIVITETER - utilgængelig";
     return errorDiv;
   }
 }
 
+// FORMAT TIME
 function formatTime(dateString) {
   const date = new Date(dateString);
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
