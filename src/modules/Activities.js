@@ -1,4 +1,5 @@
 import { fetchActivities } from "../data/ActivitiesAPI.js";
+
 import { create } from "../utils/create.js";
 import { set } from "../utils/set.js";
 
