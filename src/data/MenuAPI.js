@@ -5,6 +5,5 @@ export async function fetchMenu() {
   if (!result.ok)
     throw new Error(`Fetching failed: ${result.status} ${result.statusText}`);
   const data = await result.json();
-  console.log(data);
   return data;
 }
