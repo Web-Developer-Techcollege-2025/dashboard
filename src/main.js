@@ -11,7 +11,7 @@ const app = get("#app");
 
 (async () => {
   set(await ActivitiesModule(), app);
-  // set(await MenuModule(), app);
+  set(await MenuModule(), app);
   set(await RejseplanenModule(), app);
   set(await WeatherClockModule(), app);
   set(await DRNewsModule(), app);
