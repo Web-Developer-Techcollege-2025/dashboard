@@ -29,3 +29,4 @@ set(grid, app);
   set(await DRNewsModule(), grid);
   set(popup(), app)
 })();
+ 
