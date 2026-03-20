@@ -10,15 +10,19 @@ import { WeatherClockModule } from "./modules/WeatherAndClock.js";
 import { DRNewsModule } from "./modules/DRNews.js";
 import { superTim } from "./supertim.js";
 import { popup } from "./modules/PopUp.js";
+import logoSrc from "./assets/images/logo.svg";
 
 BackgroundGradient();
 
 const app = get("#app");
-set(superTim(), app)
+set(superTim(), app);
+
+const h1 = create("h1");
+set(h1, app);
 
 const logo = create("img");
-logo.src = "../public/logo.svg";
-set(logo, app);
+logo.src = logoSrc;
+set(logo, h1);
 
 const grid = create("div", "app-grid");
 set(grid, app);
@@ -29,6 +33,5 @@ set(grid, app);
   set(await RejseplanenModule(), grid);
   set(await WeatherClockModule(), grid);
   set(await DRNewsModule(), grid);
-  set(popup(), app)
+  set(popup(), app);
 })();
- 
