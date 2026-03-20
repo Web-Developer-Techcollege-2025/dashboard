@@ -52,6 +52,12 @@
 }
 
 @layer base {
+  html,
+  body,
+  #app {
+    @apply h-auto w-[3840];
+  }
+
   #app {
     @apply flex min-h-screen flex-col items-center p-8;
   }
