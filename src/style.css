@@ -63,7 +63,7 @@
   }
 
   .app-grid {
-    @apply grid h-full w-full grid-cols-3 grid-rows-[3fr_1fr] gap-8 p-8;
+    @apply grid h-full w-full grid-cols-3 grid-rows-2 gap-8 p-8;
   }
 
   body {

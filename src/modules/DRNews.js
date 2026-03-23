@@ -23,7 +23,7 @@ export async function DRNewsModule() {
 
     const newsWrapper = create(
       "div",
-      "news-wrapper flex h-full flex-row justify-center gap-10 rounded-xl text-5xl font-medium text-white",
+      "news-wrapper flex flex-row justify-center gap-5 rounded-xl font-medium text-white",
     );
     set(newsWrapper, drNewsModule);
 
@@ -62,19 +62,19 @@ export async function DRNewsModule() {
 
         const overlay = create(
           "div",
-          "overlay relative flex h-full w-full flex-col gap-10 rounded-lg bg-linear-to-t from-black/70 to-transparent p-10 tracking-wide",
+          "overlay relative flex w-full flex-col gap-10 rounded-lg bg-linear-to-t from-black/70 to-transparent p-10 tracking-wide",
         );
 
         const qrCanvas = create("canvas", "qr-code z-10");
         await QRCode.toCanvas(qrCanvas, item.link, {
-          width: 172,
-          color: { light: "#00000000" }, // transparent baggrund
+          width: 64,
+          color: { light: "#00000000" },
         });
-        set(qrCanvas, overlay); // eller direkte i newsItemContainer
+        set(qrCanvas, overlay);
 
         const qrWrapper = create(
           "div",
-          "absolute right-5 bottom-5 flex h-42 w-42 items-center justify-center self-end rounded-xl bg-white p-1",
+          "absolute right-2 bottom-2 flex h-16 w-16 items-center justify-center self-end rounded-xl bg-white p-1",
         );
 
         const timeCategoryWrapper = create(
