@@ -55,7 +55,7 @@
   html,
   body,
   #app {
-    @apply h-[1080px] w-[1920px] overflow-hidden;
+    @apply h-full w-[1920px] overflow-hidden; /* h-[1080px] */
   }
 
   #app {
