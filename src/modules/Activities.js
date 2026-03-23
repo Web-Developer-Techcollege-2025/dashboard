@@ -6,7 +6,7 @@ const colorVariants = [
   { bg: "bg-orange", pill: "bg-primary-red" },
   { bg: "bg-light-green", pill: "bg-dark-green" },
   { bg: "bg-yellow", pill: "bg-dark-yellow" },
-  { bg: "bg-[#2563eb]/20", pill: "bg-[#2563eb]" },
+  { bg: "bg-light-blue", pill: "bg-dark-blue" },
 ];
 
 export async function ActivitiesModule() {
@@ -19,7 +19,7 @@ export async function ActivitiesModule() {
     heading.textContent = "SKEMA";
     set(heading, container);
 
-    activities.slice(0, 10).forEach((activity, index) => {
+    activities.slice(0, 6).forEach((activity, index) => {
       const variant = colorVariants[index % colorVariants.length];
 
       const item = create(
