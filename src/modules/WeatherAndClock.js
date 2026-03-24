@@ -43,7 +43,7 @@ export function WeatherClockModule() {
       .then((data) => {
         const temp = create(
           "p",
-          "weather-temp p-3 text-center text-6xl font-bold tracking-wider text-accent-yellow",
+          "weather-temp p-3 text-center text-3xl font-bold tracking-wider text-accent-yellow",
         );
         const icon = weatherIcon(data.weather[0].description);
         temp.textContent = `${Math.round(data.main.temp)}°C`;
