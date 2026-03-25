@@ -1,9 +1,9 @@
-import { fetchRejseplanen } from "../data/rejseplanenAPI.js";
+import { fetchRejseplanen } from "../data/RejseplanenAPI.js";
 import { create } from "../utils/create.js";
 import { set } from "../utils/set.js";
 
 const CACHE_KEY = "rejseplanen";
-const CACHE_TIME = 30 * 1000; // 30 min
+const CACHE_TIME = 30 * 60 * 1000; // 30 min
 
 export async function RejseplanenModule() {
   const rejseplanenContainer = create(
@@ -11,28 +11,32 @@ export async function RejseplanenModule() {
     "rejseplanenContainer module bg-secondary-white/50",
   );
 
-  const busTitle = create(
-    "h2",
-    "m-0 mb-16 pt-12 text-center text-[72px] font-black tracking-[0.25em] text-primary-red",
-  );
+  const busTitle = create("h2");
   busTitle.textContent = "BUSTIDER";
 
   const listContainer = create(
     "div",
-    "listContainer grid grid-cols-[1fr_auto] gap-6",
+    "listContainer grid grid-cols-[1fr_auto] gap-4",
   );
 
-  const leftList = create("ul", "leftList flex flex-col gap-20 p-10");
+  const leftList = create("ul", "leftList flex flex-col gap-4");
   const rightList = create(
     "ul",
-    "rightList flex flex-col gap-20 border-l-2 border-primary-red p-10 pl-6",
+    "rightList flex flex-col gap-4 border-l-2 border-primary-red pl-4",
   );
 
   set([leftList, rightList], listContainer);
   set([busTitle, listContainer], rejseplanenContainer);
 
-  const data = await getRejseplanenData();
-  loadBusTimes(data, leftList, rightList);
+  async function refresh() {
+    leftList.innerHTML = "";
+    rightList.innerHTML = "";
+    const data = await getRejseplanenData();
+    loadBusTimes(data, leftList, rightList, refresh);
+  }
+
+  await refresh();
+  setInterval(refresh, CACHE_TIME);
 
   return rejseplanenContainer;
 }
@@ -70,9 +74,9 @@ async function getRejseplanenData() {
 }
 
 // ---------- Main render ----------
-function loadBusTimes(data, leftList, rightList) {
+function loadBusTimes(data, leftList, rightList, onExpired) {
   if (!data) {
-    const errorItem = create("li", "text-2xl text-red-500");
+    const errorItem = create("li", "text-xl text-red-500");
     errorItem.textContent = "Could not load bus times";
     set(errorItem, leftList);
     return;
@@ -85,12 +89,23 @@ function loadBusTimes(data, leftList, rightList) {
     departures = [departures];
   }
 
-  const firstSix = departures.slice(0, 10);
+  const now = new Date();
+  const futureDepartures = departures.filter((dep) => {
+    const date = dep.date;
+    const time = (dep.rtTime || dep.time || "00:00").slice(0, 5);
+    const dt = new Date(date);
+    const [h, m] = time.split(":").map(Number);
+    dt.setHours(h, m, 0, 0);
+    return dt > now;
+  });
 
-  // 🎯 Цвета по номеру автобуса
+  const firstSix = futureDepartures.slice(0, 7);
+
+  // Цвета по номеру автобуса
   const busColors = {
     17: ["bg-light-blue", "bg-dark-blue"],
     18: ["bg-yellow", "bg-dark-yellow"],
+    19: ["bg-orange", "bg-primary-red"],
     6: ["bg-light-green", "bg-dark-green"],
   };
 
@@ -110,22 +125,22 @@ function loadBusTimes(data, leftList, rightList) {
     // ---------- Левая колонка ----------
     const leftItem = create(
       "li",
-      `leftItem flex min-h-[4.5rem] min-w-[7rem] items-center rounded-full ${bgMain} text-accent-yellow shadow-sm`,
+      `leftItem flex min-h-[3.8rem] min-w-[6rem] items-center rounded-full ${bgMain} text-accent-yellow shadow-sm`,
     );
 
     const busNumber = create(
       "div",
-      `busNumber flex min-h-[4.4rem] min-w-[7.5rem] items-center justify-center rounded-full px-4 ${bgCircle} text-2xl font-extrabold`,
+      `busNumber flex min-h-[3.8rem] min-w-[4rem] items-center justify-center rounded-full px-3 ${bgCircle} text-lg font-extrabold`,
     );
     busNumber.textContent = busNumberValue;
 
     const busDirection = create(
       "div",
-      "busDirection mr-auto ml-4 text-3xl font-bold uppercase",
+      "busDirection mr-auto ml-4 text-xl font-bold uppercase",
     );
     busDirection.textContent = direction;
 
-    const busTime = create("div", "busTime mr-6 text-3xl font-bold");
+    const busTime = create("div", "busTime mr-4 text-xl font-bold");
     busTime.textContent = time;
 
     set([busNumber, busDirection, busTime], leftItem);
@@ -134,14 +149,14 @@ function loadBusTimes(data, leftList, rightList) {
     // ---------- Правая колонка ----------
     const rightItem = create(
       "li",
-      `rightItem flex min-h-[4.5rem] min-w-[12rem] items-center justify-center rounded-full ${bgCircle} text-3xl font-extrabold text-accent-yellow shadow-sm`,
+      `rightItem flex min-h-[3.8rem] min-w-[7.5rem] items-center justify-center rounded-full ${bgCircle} text-lg font-extrabold text-accent-yellow shadow-sm`,
     );
 
     rightItem.textContent = getRemainingTimeLabel(date, time);
     set(rightItem, rightList);
 
     if (date && time) {
-      startCountdown(date, time, rightItem, leftItem);
+      startCountdown(date, time, rightItem, leftItem, onExpired);
     }
   });
 }
@@ -160,7 +175,7 @@ function getRemainingTimeLabel(dateString, timeString) {
   const totalSeconds = Math.floor(diff / 1000);
   const mins = Math.floor(totalSeconds / 60);
 
-  if (diff <= -1 * 60 * 1000) return null; // 5 min past departure → remove
+  if (diff <= -2 * 60 * 1000) return null;
   if (diff <= 0) return "Too late ☹";
   if (mins >= 20) return "20min+";
   if (mins >= 10) return "10min+";
@@ -174,8 +189,8 @@ function getRemainingTimeLabel(dateString, timeString) {
 }
 
 // ---------- Live update ----------
-function startCountdown(dateString, timeString, element, leftElement) {
-  let interval; // ✅ declared first
+function startCountdown(dateString, timeString, element, leftElement, onExpired) {
+  let interval;
 
   function updateCountdown() {
     const label = getRemainingTimeLabel(dateString, timeString);
@@ -183,11 +198,12 @@ function startCountdown(dateString, timeString, element, leftElement) {
       clearInterval(interval);
       element.remove();
       leftElement?.remove();
+      onExpired?.();
       return;
     }
     element.textContent = label;
   }
 
   updateCountdown();
-  interval = setInterval(updateCountdown, 1000); // ✅ assigned after
+  interval = setInterval(updateCountdown, 1000);
 }

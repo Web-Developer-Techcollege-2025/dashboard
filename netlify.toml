@@ -1,0 +1,15 @@
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/kantineproxy"
+  to = "/.netlify/functions/kantineproxy"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/kantineapi/*"
+  to = "https://infoskaerm.techcollege.dk/:splat"
+  status = 200
+  force = true
+  headers = {Referer = "https://infoskaerm.techcollege.dk/", Origin = "https://infoskaerm.techcollege.dk"}
