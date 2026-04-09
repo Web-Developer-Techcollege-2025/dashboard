@@ -11,11 +11,9 @@ const colorVariants = [
 
 export async function ActivitiesModule() {
   try {
-    const activities = await getActivities();
-
     const container = create(
       "section",
-      "module activities-module bg-secondary-white/50",
+      "module activities-module",
     );
 
     const heading = create("h2");
@@ -23,54 +21,65 @@ export async function ActivitiesModule() {
     set(heading, container);
 
     const scheduleShow = create("div", "flex flex-col gap-6");
-
-    activities.slice(0, 7).forEach((activity, index) => {
-      const variant = colorVariants[index % colorVariants.length];
-
-      const item = create(
-        "div",
-        `flex min-h-[3.8rem] items-center rounded-full ${variant.bg} text-accent-yellow shadow-sm`,
-      );
-
-      const room = create(
-        "div",
-        `flex min-h-[3.8rem] w-30 shrink-0 items-center justify-center rounded-full px-3 ${variant.pill} text-xl font-extrabold`,
-      );
-      room.textContent = activity.room || "-";
-
-      const middleLeft = create(
-        "div",
-        "ml-4 flex w-32 shrink-0 items-center align-middle",
-      );
-
-      const middleRight = create(
-        "div",
-        "flex w-48 shrink-0 items-center overflow-hidden",
-      );
-
-      const team = create("div", "text-xl font-bold");
-      team.textContent = activity.team;
-
-      const subject = create(
-        "div",
-        "ml-5 text-xl opacity-90 first-letter:uppercase",
-      );
-      subject.textContent = activity.subject;
-
-      set(team, middleLeft);
-      set(subject, middleRight);
-
-      const time = create(
-        "div",
-        "mr-4 w-16 shrink-0 text-right text-xl font-bold",
-      );
-      time.textContent = formatTime(activity.startDate);
-
-      set([room, middleLeft, middleRight, time], item);
-      set(item, scheduleShow);
-    });
-
     set(scheduleShow, container);
+
+    async function updateActivities() {
+      try {
+        const activities = await getActivities();
+        scheduleShow.innerHTML = "";
+
+        activities.slice(0, 7).forEach((activity, index) => {
+          const variant = colorVariants[index % colorVariants.length];
+
+          const item = create(
+            "div",
+            `flex min-h-[3.8rem] items-center rounded-full ${variant.bg} text-accent-yellow shadow-sm`,
+          );
+
+          const room = create(
+            "div",
+            `flex min-h-[3.8rem] w-30 shrink-0 items-center justify-center rounded-full px-3 ${variant.pill} text-xl font-extrabold`,
+          );
+          room.textContent = activity.room || "-";
+
+          const middleLeft = create(
+            "div",
+            "ml-4 flex w-32 shrink-0 items-center align-middle",
+          );
+
+          const middleRight = create(
+            "div",
+            "flex w-48 shrink-0 items-center overflow-hidden",
+          );
+
+          const team = create("div", "text-xl font-bold");
+          team.textContent = activity.team;
+
+          const subject = create(
+            "div",
+            "ml-5 text-xl opacity-90 first-letter:uppercase",
+          );
+          subject.textContent = activity.subject;
+
+          set(team, middleLeft);
+          set(subject, middleRight);
+
+          const time = create(
+            "div",
+            "mr-4 w-16 shrink-0 text-right text-xl font-bold",
+          );
+          time.textContent = formatTime(activity.startDate);
+
+          set([room, middleLeft, middleRight, time], item);
+          set(item, scheduleShow);
+        });
+      } catch (error) {
+        console.error("Error updating activities:", error);
+      }
+    }
+
+    await updateActivities();
+    setInterval(updateActivities, 30 * 60 * 1000); // Update every half hour
 
     return container;
   } catch (error) {
@@ -78,7 +87,7 @@ export async function ActivitiesModule() {
 
     const errorDiv = create(
       "div",
-      "rounded-3xl bg-primary-red p-10 text-center text-xl text-white",
+      "rounded-3xl bg-primary-blue p-10 text-center text-xl text-white",
     );
     errorDiv.textContent = "AKTIVITETER - utilgængelig";
     return errorDiv;

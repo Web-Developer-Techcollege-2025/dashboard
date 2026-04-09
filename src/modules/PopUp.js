@@ -4,11 +4,12 @@ import { PopUpContent } from "./PopUpContent.js";
 export function popup() {
   const modal = create(
     "div",
-    "pop-up fixed inset-0 flex hidden items-center justify-center",
+    "pop-up fixed inset-0 hidden items-center justify-center",
   );
 
   setInterval(() => {
     modal.classList.remove("hidden");
+    modal.classList.add("flex");
     setTimeout(() => {
       modal.classList.add("hidden");
     }, 25_000); /* Shows for 25 seconds */

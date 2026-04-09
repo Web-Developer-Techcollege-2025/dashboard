@@ -20,13 +20,13 @@ export const PopUpContent = () => {
 
   const h1 = create(
     "h1",
-    "mb-6 w-full text-center text-5xl leading-tight font-bold text-balance text-primary-red/90",
+    "mb-6 w-full text-center text-5xl leading-tight font-bold text-balance text-primary-blue/90",
   );
   h1.textContent = "Fælles morgenmad på medie";
 
   const p = create(
     "p",
-    "w-full text-center text-3xl leading-tight font-normal text-balance text-primary-red/90",
+    "w-full text-center text-3xl leading-tight font-normal text-balance text-primary-blue/90",
   );
   p.textContent =
     "Husk at der er fælles morgenmad på Medieafdelingen mandag d. 30. marts kl. 9:30.";

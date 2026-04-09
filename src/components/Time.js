@@ -14,8 +14,17 @@ export function time(date = new Date()) {
     });
   }
 
-  updateTime(); 
-  setInterval(updateTime, 1000); 
+  updateTime();
+
+  // Calculate time until next minute boundary to sync with clock
+  const now = new Date();
+  const delay = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
+  setTimeout(() => {
+    updateTime();
+    const intervalId = setInterval(updateTime, 60000);
+    // Store interval on element for cleanup if needed
+    timeEl._intervalId = intervalId;
+  }, delay);
 
   return timeEl;
 }

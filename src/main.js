@@ -11,7 +11,7 @@ import { RejseplanenModule } from "./modules/Rejseplanen.js";
 import { WeatherClockModule } from "./modules/WeatherAndClock.js";
 import { DRNewsModule } from "./modules/DRNews.js";
 import { superTim } from "./supertim.js";
-import { popup } from "./modules/PopUp.js";
+// import { popup } from "./modules/PopUp.js"; /* DISABLED UNTIL NEW CONTENT IS READY */
 import logoSrc from "./assets/images/logo.svg";
 
 BackgroundGradient();
@@ -28,6 +28,26 @@ set(logo, h1);
 const grid = create("div", "app-grid");
 set([h1, grid], app);
 
+// Create placeholder containers to preserve grid order during async loads
+const modulePlaceholders = {
+  activities: create("div", "contents"),
+  menu: create("div", "contents"),
+  rejseplanen: create("div", "contents"),
+  weather: create("div", "contents"),
+  drNews: create("div", "contents"),
+};
+
+set(
+  [
+    modulePlaceholders.activities,
+    modulePlaceholders.menu,
+    modulePlaceholders.rejseplanen,
+    modulePlaceholders.weather,
+    modulePlaceholders.drNews,
+  ],
+  grid,
+);
+
 async function mountModule(moduleFactory, container, moduleName) {
   try {
     const moduleElement = await moduleFactory();
@@ -38,15 +58,31 @@ async function mountModule(moduleFactory, container, moduleName) {
 }
 
 (async () => {
-  await mountModule(ActivitiesModule, grid, "Activities module");
-  await mountModule(MenuModule, grid, "Menu module");
-  await mountModule(RejseplanenModule, grid, "Rejseplanen module");
-  await mountModule(WeatherClockModule, grid, "Weather and clock module");
-  await mountModule(DRNewsModule, grid, "DR News module");
+  // Load all modules in parallel with individual error handling
+  await Promise.allSettled([
+    mountModule(
+      ActivitiesModule,
+      modulePlaceholders.activities,
+      "Activities module",
+    ),
+    mountModule(MenuModule, modulePlaceholders.menu, "Menu module"),
+    mountModule(
+      RejseplanenModule,
+      modulePlaceholders.rejseplanen,
+      "Rejseplanen module",
+    ),
+    mountModule(
+      WeatherClockModule,
+      modulePlaceholders.weather,
+      "Weather and clock module",
+    ),
+    mountModule(DRNewsModule, modulePlaceholders.drNews, "DR News module"),
+  ]);
 
-  try {
-    set(popup(), app);
-  } catch (error) {
-    console.error("Failed to render popup:", error);
-  }
+  // DISABLE POPUP UNTIL NEW CONTENT IS READY (see also import at top)
+  // try {
+  //   set(popup(), app);
+  // } catch (error) {
+  //   console.error("Failed to render popup:", error);
+  // }
 })();

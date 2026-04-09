@@ -3,8 +3,14 @@ const kantineURL =
 
 export async function fetchMenu() {
   const result = await fetch(kantineURL);
-  if (!result.ok)
-    throw new Error(`Fetching failed: ${result.status} ${result.statusText}`);
+  if (!result.ok) {
+    const error = new Error(
+      `Fetching failed: ${result.status} ${result.statusText}`,
+    );
+    error.status = result.status;
+    error.statusText = result.statusText;
+    throw error;
+  }
 
   const text = await result.text();
 
