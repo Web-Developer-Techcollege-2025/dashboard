@@ -11,7 +11,16 @@ export function BackgroundGradient() {
       inherits: false;
     }
     #app {
-      background: conic-gradient(from var(--angle) at 50% 200%, #d946ef, #a855f7, #06b6d4, #0ea5e9, #facc15, #fb923c, #d946ef);
+      background: conic-gradient(
+        from var(--angle) at 50% 200%,
+        var(--color-primary-blue),
+        var(--color-purple),
+        var(--color-dark-blue),
+        var(--color-blue),
+        var(--color-yellow),
+        var(--color-orange),
+        var(--color-primary-blue)
+      );
       animation: gradientRotate 25s linear infinite;
     }
   `;

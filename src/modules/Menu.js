@@ -27,7 +27,7 @@ export async function MenuModule() {
     const card = create("div", "menu-card w-full px-5");
     card.dataset.day = key;
 
-    const title = create("h3", "text-lg tracking-widest text-primary-red");
+    const title = create("h3", "text-lg tracking-widest text-primary-blue");
     title.textContent = label;
 
     const row = create(
@@ -37,11 +37,11 @@ export async function MenuModule() {
 
     const dish = create(
       "p",
-      "dish flex-1 font-bold wrap-break-word hyphens-auto text-primary-red",
+      "dish flex-1 font-bold wrap-break-word hyphens-auto text-primary-blue",
     );
     dish.textContent = "–";
 
-    const price = create("p", "price shrink-0 font-bold text-primary-red");
+    const price = create("p", "price shrink-0 font-bold text-primary-blue");
 
     dishElement[key] = dish;
     priceElement[key] = price;
@@ -71,30 +71,65 @@ export async function MenuModule() {
     const dayOfWeek = new Date().getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) return;
 
-    try {
-      const data = await fetchMenu();
-      heading.textContent = `MENU - UGE ${data.Week}`;
-      if (!data.Days || !Array.isArray(data.Days)) return;
-      data.Days.forEach(({ DayName, Dish }) => {
-        const key = DayName.toLowerCase();
-        if (!dishElement[key]) return;
-        const priceMatch = Dish.match(/kr\..+$/i);
-        const dishName = priceMatch
-          ? Dish.slice(0, priceMatch.index).trim()
-          : Dish;
-        const dishPrice = priceMatch ? priceMatch[0] : "";
-        dishElement[key].textContent = dishName;
-        priceElement[key].textContent = dishPrice;
-      });
-      highlightToday();
-    } catch (err) {
-      console.error("Failed to fetch canteen menu:", err);
-    }
+    const data = await fetchMenu();
+    heading.textContent = `MENU - UGE ${data.Week}`;
+    if (!data.Days || !Array.isArray(data.Days)) return;
+    data.Days.forEach(({ DayName, Dish }) => {
+      const key = DayName.toLowerCase();
+      if (!dishElement[key]) return;
+      const priceMatch = Dish.match(/kr\..+$/i);
+      const dishName = priceMatch
+        ? Dish.slice(0, priceMatch.index).trim()
+        : Dish;
+      const dishPrice = priceMatch ? priceMatch[0] : "";
+      dishElement[key].textContent = dishName;
+      priceElement[key].textContent = dishPrice;
+    });
+    highlightToday();
   }
 
-  await updateMenu();
+  try {
+    await updateMenu();
+  } catch (err) {
+    console.error("Failed to fetch canteen menu:", err);
+    showMenuErrorState(section, err);
+    return section;
+  }
 
-  setInterval(updateMenu, 10 * 60 * 60 * 1000);
+  setInterval(
+    async () => {
+      try {
+        await updateMenu();
+      } catch (err) {
+        console.error("Failed to fetch canteen menu:", err);
+        showMenuErrorState(section, err);
+      }
+    },
+    10 * 60 * 60 * 1000,
+  );
 
   return section;
+}
+
+function showMenuErrorState(section, error) {
+  section.innerHTML = "";
+
+  const heading = create("h2");
+  heading.textContent = "UGENS MENU";
+
+  const errorContainer = create(
+    "div",
+    "flex h-full items-center justify-center rounded-xl bg-secondary-white/40 p-8 text-center",
+  );
+  const errorText = create(
+    "p",
+    "max-w-[26ch] text-2xl font-bold tracking-wide text-balance text-primary-blue",
+  );
+  errorText.textContent =
+    error?.status === 403
+      ? "Menuen kan kun tilgås på Techcollege's netværk"
+      : "Menuen kan ikke tilgås lige nu";
+
+  errorContainer.append(errorText);
+  section.append(heading, errorContainer);
 }

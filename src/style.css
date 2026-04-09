@@ -3,7 +3,8 @@
 
 @theme {
   /* === COLORS === */
-  --color-primary-red: #2306c2;
+  --color-primary-blue: #2306c2;
+  --color-primary-red: #b91c1c;
   --color-accent-yellow: #fffcc6;
   --color-secondary-white: #ffffff;
   --color-orange: #e48846;
@@ -72,7 +73,7 @@
   }
 
   h2 {
-    @apply mb-5 text-center text-4xl font-black tracking-widest text-primary-red;
+    @apply mb-5 text-center text-4xl font-black tracking-widest text-primary-blue;
   }
 
   section.dr-news-module h2 {
