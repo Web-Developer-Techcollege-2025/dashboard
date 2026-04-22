@@ -226,7 +226,7 @@ function showMenuErrorState(section, error) {
   const isNetworkRestrictedError = isMenuAccessError(error);
 
   const errorText = isNetworkRestrictedError
-    ? "Kantinens menu kan kun tilgås på Techcollege's netværk"
+    ? "Kantinens menu kunne ikke tilgås (kræver muligvis Techcollege's netværk)"
     : "Kantinens menu kan ikke tilgås lige nu";
 
   const errorContainer = createModuleMessageCard(errorText);
